@@ -1,28 +1,25 @@
-#include <stdlib.h>
-#include <gl/glut.h>
-#include <math.h>
-#include "glaux.h"
-#include <iostream>
+//To vin the game you should hit the shtab first
+//to move the tank use keys 'w' 's' 'a' 'd'
+//to fire press 'spase'
+
 #include <ctime>
 #pragma comment (lib, "glaux.lib")
 
 
 struct PLAYER2;
 
-int  w = 600, h = 400;
+int  w = 600, h = 400;//width and higth of window
 int counter = 0, f_counter = 0, d_counter=0 ;
 AUX_RGBImageRec *MyImage;
 
-float gravity = 1.45;
-float drag = 0.8;
 
 struct SHTAB
 {
 	AUX_RGBImageRec * image;
 
-	int x = 300, y = 200;
+	int x = 100, y = 350;//coordinates
 
-	bool hitpoint = true;
+	bool hitpoint = true;//shtab destroyed or not
 
 	void Draw()
 	{
@@ -40,8 +37,7 @@ struct SHTAB
 struct Wall
 {
 	AUX_RGBImageRec * image2;
-	int x = 200;
-	int y = 150;
+	int x = 200;int y = 150;//coordinates
 	void Draw()
 	{
 		glRasterPos2d(x, y);
@@ -58,8 +54,8 @@ struct Wall
 
 struct BALL
 {
-	int x = 300, y = 400;
-	float dx = -5, dy = 0;
+	int x, y;
+//	float dx = -5, dy = 0;
 	bool Up, Down, Left, Right, visible;
 	AUX_RGBImageRec * image;
 
@@ -68,7 +64,7 @@ struct BALL
 
 		if (Up && visible)
 		{
-			y += 25;
+			y += 15;
 			if (y >= h - 40)
 			{
 				visible = false;
@@ -77,7 +73,7 @@ struct BALL
 			{
 				visible = false;
 			}
-			if (x + 39 >= hp.x && x <= hp.x && y > hp.y)
+			if (x + 39 >= hp.x && x <= hp.x && y > hp.y && y<hp.y+40)
 			{
 				
 				hp.hitpoint = false;
@@ -88,7 +84,7 @@ struct BALL
 		}
 		if (Down && visible)
 		{
-			y -= 25;
+			y -= 15;
 			if (y <= 0)
 			{
 				visible = false;
@@ -97,7 +93,7 @@ struct BALL
 			{
 				visible = false;
 			}
-			if (x+40>=hp.x && x<hp.x+40 && y<=hp.y )
+			if (x + 39 >= hp.x && x <= hp.x && y > hp.y && y<hp.y + 40)
 			{
 
 				hp.hitpoint = false;
@@ -107,7 +103,7 @@ struct BALL
 
 		if (Right && visible)
 		{
-			x += 25;
+			x += 15;
 			if (x >= w - 40)
 			{
 				visible = false;
@@ -116,7 +112,7 @@ struct BALL
 			{
 				visible = false;
 			}
-			if (y + 39 >= hp.y && y <= hp.y && x > hp.x)
+			if (x>hp.x - 40 && x<hp.x && y>hp.y - 40 && y<hp.y + 40)
 			{
 
 				hp.hitpoint = false;
@@ -126,21 +122,22 @@ struct BALL
 		}
 		if (Left && visible)
 		{
-			x -= 25;
+			x -= 15;
 			if (x <= 0)
 			{
 				visible = false;
 			}
-			if (x < wall.x + 40 && x>wall.x && y > wall.y - 40 && y<wall.y + 40)
+			if (x<wall.x - 40 && x>wall.x && y>wall.y - 40 && y<wall.y + 40)
 			{
 				visible = false;
 			}
-			if (y + 40 >= hp.y && y<hp.y + 40 && x <= hp.x)
+			if (y + 39 >= hp.y && y <= hp.y && x > hp.x)
 			{
 
 				hp.hitpoint = false;
 				visible = false;
 			}
+	
 		}
 
 		if (x < 0)
@@ -236,13 +233,14 @@ struct PLAYER
 	
 	}
 
-	void move(PLAYER &p1, PLAYER2 &p2);
-	/*{
+	void move(PLAYER &p1, PLAYER &p2)
+	{
+	
 	
 		if (Right && run)
 		{
 			
-			x += 25;
+			x += 10;
 			if (x >= w - 40)
 			{
 				x = w - 40;
@@ -273,7 +271,7 @@ struct PLAYER
 				x = wall.x - 40;
 			}
 		
-			x -= 25;
+			x -= 10;
 			if (x <= 0 )
 			{
 				x = 0;
@@ -296,7 +294,7 @@ struct PLAYER
 		if (Up && run)
 		{
 			
-			y += 25;
+			y += 10;
 			if (y >= h - 40)
 			{
 				y = h - 40;
@@ -321,7 +319,7 @@ struct PLAYER
 		if (Down && run)
 		{
 	
-			y -=25;
+			y -=10;
 			if (y <= 0 )
 			{
 				y = 0;
@@ -341,7 +339,7 @@ struct PLAYER
 		}
 
 
-	}*/
+	}
 
 	void Draw()
 	{
@@ -355,245 +353,11 @@ struct PLAYER
 	}
 } pl1,pl2; 
 
-struct PLAYER2
-{
-	int x = 100, y = 90;
-	int cx = x + 20;
-	int cy = y + 20;
-	float dx = -10, dy = 0;
-	BALL ball;
-	bool Right, Left, Up, Down, run;
-
-	bool player=false;
-
-	AUX_RGBImageRec * image;
-
-
-	
-
-	void move2(PLAYER2 &p1, PLAYER &p2)
-	{
-
-		if (Right && run)
-		{
-
-			x += 25;
-			if (x >= w - 40)
-			{
-				x = w - 40;
-			
-			}
-			if (x + 40 > wall.x && x  < wall.x + 40 && y + 40 > wall.y  && y<wall.y + 40)
-			{
-				x = wall.x - 40;
-			}
-
-			if (p1.x + 40 > p2.x && p1.x  < p2.x + 40 && p1.y + 40 > p2.y  && p1.y<p2.y + 40)
-			{
-				p1.x = p2.x - 40;
-				p2.x = p1.x + 40;
-
-
-			}
 
 
 
-		}
 
-		if (Left && run)
-		{
-			if (x + 40 == wall.x)
-			{
-				x = wall.x - 40;
-			}
-
-			x -= 25;
-			if (x <= 0)
-			{
-				x = 0;
-			
-			}
-			if (x < wall.x + 40 && x + 40 > wall.x + 40 && y + 40 > wall.y  && y<wall.y + 40)
-			{
-				x = wall.x + 40;
-			}
-
-			if (p1.x < p2.x + 40 && p1.x + 40 > p2.x + 40 && p1.y + 40 > p2.y  && p1.y<p2.y + 40)
-			{
-				p1.x = p2.x + 40;
-				p2.x = p1.x - 40;
-			}
-		}
-
-
-		if (Up && run)
-		{
-
-			y += 25;
-			if (y >= h - 40)
-			{
-				y = h - 40;
-			
-
-			}
-
-			if (y>wall.y - 40 && y<wall.y && x>wall.x - 40 && x<wall.x + 40)
-			{
-				y = wall.y - 40;
-			}
-
-			if (p1.y>p2.y - 40 && p1.y<p2.y && p1.x>p2.x - 40 && p1.x<p2.x + 40)
-			{
-				p1.y = p2.y - 40;
-				p2.y = p1.y + 40;
-			}
-		}
-
-
-		if (Down && run)
-		{
-
-			y -= 25;
-			if (y <= 0)
-			{
-				y = 0;
-		
-			}
-			if (y < wall.y + 40 && y>wall.y && x > wall.x - 40 && x<wall.x + 40)
-			{
-				y = wall.y + 40;
-			}
-
-			if (p1.y < p2.y + 40 && p1.y>p2.y && p1.x > p2.x - 40 && p1.x<p2.x + 40)
-			{
-				p1.y = p2.y + 40;
-				p2.y = p1.y - 40;
-			}
-		}
-
-
-	}
-
-	void Draw()
-	{
-		glRasterPos2d(x, y);
-		glDrawPixels(
-			image->sizeX,
-			image->sizeY,
-			GL_RGB,
-			GL_UNSIGNED_BYTE,
-			image->data);
-	}
-} pl;
-
-void PLAYER:: move(PLAYER &p1, PLAYER2 &p2)
-{
-
-	if (Right && run)
-	{
-
-		x += 25;
-		if (x >= w - 40)
-		{
-			x = w - 40;
-			if (player == false)
-				setDirection();
-		}
-		if (x + 40 > wall.x && x  < wall.x + 40 && y + 40 > wall.y  && y<wall.y + 40)
-		{
-			x = wall.x - 40;
-		}
-
-		if (p1.x + 40 > p2.x && p1.x  < p2.x + 40 && p1.y + 40 > p2.y  && p1.y<p2.y + 40)
-		{
-			p1.x = p2.x - 40;
-			p2.x = p1.x + 40;
-
-
-		}
-
-
-
-	}
-
-	if (Left && run)
-	{
-		if (x + 40 == wall.x)
-		{
-			x = wall.x - 40;
-		}
-
-		x -= 25;
-		if (x <= 0)
-		{
-			x = 0;
-			if (player == false)
-				setDirection();
-		}
-		if (x < wall.x + 40 && x + 40 > wall.x + 40 && y + 40 > wall.y  && y<wall.y + 40)
-		{
-			x = wall.x + 40;
-		}
-
-		if (p1.x < p2.x + 40 && p1.x + 40 > p2.x + 40 && p1.y + 40 > p2.y  && p1.y<p2.y + 40)
-		{
-			p1.x = p2.x + 40;
-			p2.x = p1.x - 40;
-		}
-	}
-
-
-	if (Up && run)
-	{
-
-		y += 25;
-		if (y >= h - 40)
-		{
-			y = h - 40;
-			if (player == false)
-				setDirection();
-
-		}
-
-		if (y>wall.y - 40 && y<wall.y && x>wall.x - 40 && x<wall.x + 40)
-		{
-			y = wall.y - 40;
-		}
-
-		if (p1.y>p2.y - 40 && p1.y<p2.y && p1.x>p2.x - 40 && p1.x<p2.x + 40)
-		{
-			p1.y = p2.y - 40;
-			p2.y = p1.y + 40;
-		}
-	}
-
-
-	if (Down && run)
-	{
-
-		y -= 25;
-		if (y <= 0)
-		{
-			y = 0;
-			if (player == false)
-				setDirection();
-		}
-		if (y < wall.y + 40 && y>wall.y && x > wall.x - 40 && x<wall.x + 40)
-		{
-			y = wall.y + 40;
-		}
-
-		if (p1.y < p2.y + 40 && p1.y>p2.y && p1.x > p2.x - 40 && p1.x<p2.x + 40)
-		{
-			p1.y = p2.y + 40;
-			p2.y = p1.y - 40;
-		}
-	}
-
-
-}
-
-void Fire(BALL &ball, PLAYER &pl2)
+void Fire(BALL &ball, PLAYER &pl2)//tank fire
 {
 	ball.x = pl2.x;
 	ball.y = pl2.y;
@@ -622,36 +386,10 @@ void DrawField()
 void Tick()
 {
 	pl1.ball.move(Shtab, wall);
-	pl2.move( pl2, pl);
-	pl.move2(pl, pl2);
+	pl2.move(pl2, pl1);
+	pl1.move(pl1, pl2);
 	pl2.ball.move(Shtab, wall);
-	pl.ball.move(Shtab, wall);
-	double Dx = pl1.ball.x - pl1.x;
-	double Dy = pl1.ball.y - pl1.y;
-
-	double d = sqrt(Dx*Dx + Dy * Dy);
-
-	int r1 = 30;
-	int r2 = 30;
-
-	if (d < r1 + r2)
-	{
-		double ax = Dx / d;
-		double ay = Dy / d;
-
-		double Vn1 = pl1.dx*ax + pl1.dy*ay;
-		double Vt1 = -pl1.dx*ay + pl1.dy*ax;
-
-		double Vn2 = ball.dx*ax + ball.dy*ay;
-		double Vt2 = -ball.dx*ay + ball.dy*ax;
-
-		Vn2 = Vn1 - Vn2;
-
-		ball.dx = Vn2 * ax - Vt2 * ay;
-		ball.dy = Vn2 * ay + Vt2 * ax;
-
-	}
-
+	pl1.ball.move(Shtab, wall);
 }
 
 
@@ -696,46 +434,6 @@ void MyKeyboard(unsigned char key, int a, int b)
 		pl2.Right = false;
 		pl2.run = true;
 		break;
-
-	case '8':
-		pl.Up = true;
-		pl.Down = false;
-		pl.Left = false;
-		pl.Right = false;
-		pl.run = true;
-		break;
-
-	case '6':
-
-		pl.Up = false;
-		pl.Down = false;
-		pl.Left = false;
-		pl.Right = true;
-		pl.run = true;
-		break;
-
-	case '4':
-
-		pl.Up = false;
-		pl.Down = false;
-		pl.Left = true;
-		pl.Right = false;
-		pl.run = true;
-		break;
-
-	case '5':
-
-		pl.Up = false;
-		pl.Down = true;
-		pl.Left = false;
-		pl.Right = false;
-		pl.run = true;
-		break;
-	case ' ':
-		ball.visible = false; std::cout << Shtab.hitpoint << " ";
-		break;
-
-	
 
 	}
 }
@@ -782,41 +480,6 @@ void MyKeyboardUp(unsigned char key, int a, int b)
 		pl2.run = false;
 		break;
 
-	case '8':
-
-		pl.Up = true;
-		pl.Down = false;
-		pl.Left = false;
-		pl.Right = false;
-		pl.run = false;
-		break;
-
-	case '6':
-
-		pl.Up = false;
-		pl.Down = false;
-		pl.Left = false;
-		pl.Right = true;
-		pl.run = false;
-		break;
-
-	case '4':
-
-		pl.Up = false;
-		pl.Down = false;
-		pl.Left = true;
-		pl.Right = false;
-		pl.run = false;
-		break;
-
-	case '5':
-
-		pl.Up = false;
-		pl.Down = true;
-		pl.Left = false;
-		pl.Right = false;
-		pl.run = false;
-		break;
 	case' ':
 		pl2.ball.x = pl2.x;
 		pl2.ball.y = pl2.y;
@@ -827,15 +490,7 @@ void MyKeyboardUp(unsigned char key, int a, int b)
 		pl2.ball.visible = true;
 		break;
 
-	case'0':
-		pl.ball.x = pl.x;
-		pl.ball.y = pl.y;
-		pl.ball.Up = pl.Up;
-		pl.ball.Down = pl.Down;
-		pl.ball.Right = pl.Right;
-		pl.ball.Left = pl.Left;
-		pl.ball.visible = true;
-		break;
+	
 	}
 
 }
@@ -853,17 +508,14 @@ void display()
 	}
 	else
 	{
-	
-		system("pause");
+	system("pause");
 	}
 	
 	wall.Draw();
 	ball.Draw();
-	//pl1.ball.Draw();
-	pl.Draw();
-	pl.ball.Draw();
+	pl1.ball.Draw();
+	pl1.Draw();
 	pl2.ball.Draw();
-	//pl1.Draw();
 	pl2.Draw();
 	glFlush();
 }
@@ -873,24 +525,24 @@ void timer(int t = 0)
 	counter++;
 	f_counter++;
 	d_counter ++;
-	/*if (f_counter >= 40)
+	if (f_counter >= 40)
 	{
 		Fire(pl1.ball, pl1);
 		f_counter = 0;
-	}*/
+	}
 
-	if (d_counter >= 30)
+	if (d_counter >= 20)
 	{
 		pl1.setDirection();
 		d_counter = 0;
 	}
 	
-	/*if (counter >= 5)
+	if (counter >= 25)
 	{
 	
 		pl1.move( pl1, pl2);
 		counter = 0;
-	}*/
+	}
 	display();
 	Tick();
 	glutTimerFunc(50, timer, 0);
@@ -909,10 +561,10 @@ void main(int argc, char *argv[])
 
 	MyImage = auxDIBImageLoad("background.bmp");
 	ball.image = auxDIBImageLoad("shell.bmp");
-	pl.image = auxDIBImageLoad("tank.bmp");
+	pl1.image = auxDIBImageLoad("tank.bmp");
 	pl2.image = auxDIBImageLoad("tank.bmp");
 	pl2.ball.image= auxDIBImageLoad("shell.bmp");
-	pl.ball.image = auxDIBImageLoad("shell.bmp");
+	pl1.ball.image = auxDIBImageLoad("shell.bmp");
 	wall.image2 = auxDIBImageLoad("wall.bmp");
 	Shtab.image = auxDIBImageLoad("box.bmp");
 	glutInit(&argc, argv);
@@ -936,7 +588,7 @@ void main(int argc, char *argv[])
 	glutKeyboardFunc(MyKeyboard);
 	glutKeyboardUpFunc(MyKeyboardUp);
 	
-	glutMainLoop();
+	glutMainLoop() ;
 }
 
 
