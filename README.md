@@ -1,7 +1,11 @@
 //To vin the game you should hit the shtab first
 //to move the tank use keys 'w' 's' 'a' 'd'
 //to fire press 'spase'
-
+#include <stdlib.h>
+#include <gl/glut.h>
+#include <math.h>
+#include "glaux.h"
+#include <iostream>
 #include <ctime>
 #pragma comment (lib, "glaux.lib")
 
